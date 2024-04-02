@@ -1,5 +1,9 @@
 package shop.mtcoding.blog.user;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -39,9 +43,8 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserRequest.LoginDTO reqDTO) {
-        SessionUser sessionUser = userService.로그인(reqDTO);
-        session.setAttribute("sessionUser", sessionUser);
-        return ResponseEntity.ok(new ApiUtil(null));
+        String jwt = userService.로그인(reqDTO);
+        return ResponseEntity.ok().header("Authorization", "Bearer "+jwt).body(new ApiUtil(null));
     }
 
     @GetMapping("/logout")
