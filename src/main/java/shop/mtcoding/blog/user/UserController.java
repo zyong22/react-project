@@ -21,7 +21,6 @@ public class UserController {
     private final UserService userService;
     private final HttpSession session;
 
-    // TODO: 회원정보 조회 API 필요 -> @GetMapping("/api/users/{id}")
     @GetMapping("/api/users/{id}")
     public ResponseEntity<?> userinfo(@PathVariable Integer id){
         UserResponse.DTO respDTO = userService.회원조회(id);
@@ -29,7 +28,7 @@ public class UserController {
     }
 
     @PutMapping("/api/users/{id}")
-    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody UserRequest.UpdateDTO reqDTO) {
+    public ResponseEntity<?> update(@PathVariable Integer id, @Valid @RequestBody UserRequest.UpdateDTO reqDTO, Errors errors) {
         SessionUser sessionUser = (SessionUser) session.getAttribute("sessionUser");
         SessionUser newSessionUser = userService.회원수정(sessionUser.getId(), reqDTO);
         session.setAttribute("sessionUser", newSessionUser);

@@ -1,6 +1,7 @@
 package shop.mtcoding.blog.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,8 +15,7 @@ import shop.mtcoding.blog._core.utils.JwtUtil;
 import shop.mtcoding.blog.user.User;
 import shop.mtcoding.blog.user.UserRequest;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * 2. 배포직전 최종테스트
  */
 
+@Transactional
 @AutoConfigureMockMvc // MockMvc IoC 로드
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK) // 모든 빈 IoC 로드
 public class UserControllerTest {
@@ -47,9 +48,71 @@ public class UserControllerTest {
     }
 
     @Test
-    public void userinfo_test() throws Exception {
+    public void update_fail_test() throws Exception {
+
         // given
         Integer id = 1;
+        UserRequest.UpdateDTO reqDTO = new UserRequest.UpdateDTO();
+        reqDTO.setPassword("0000");
+        reqDTO.setEmail("egdgnavercom");
+        String reqBody = om.writeValueAsString(reqDTO);
+
+        // when
+        ResultActions actions = mvc.perform(
+                put("/api/users/" + id)
+                        .header("Authorization", "Bearer " + jwt)
+                        .content(reqBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // eye
+//        String respBody = actions.andReturn().getResponse().getContentAsString();
+//        System.out.println("respBody : " + respBody);
+//        int statusCode = actions.andReturn().getResponse().getStatus();
+//        System.out.println("statusCode : "+statusCode);
+
+        // then
+        actions.andExpect(jsonPath("$.status").value(400));
+        actions.andExpect(jsonPath("$.msg").value("이메일 형식으로 작성해주세요 : email"));
+    }
+
+    @Test
+    public void update_success_test() throws Exception {
+
+        // given
+        Integer id = 1;
+        UserRequest.UpdateDTO reqDTO = new UserRequest.UpdateDTO();
+        reqDTO.setPassword("0000");
+        reqDTO.setEmail("egdg@naver.com");
+        String reqBody = om.writeValueAsString(reqDTO);
+
+        // when
+        ResultActions actions = mvc.perform(
+                put("/api/users/" + id)
+                        .header("Authorization", "Bearer " + jwt)
+                        .content(reqBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // eye
+//        String respBody = actions.andReturn().getResponse().getContentAsString();
+        //int statusCode = actions.andReturn().getResponse().getStatus();
+//        System.out.println("respBody : " + respBody);
+        //System.out.println("statusCode : "+statusCode);
+
+
+        // then
+        actions.andExpect(jsonPath("$.status").value(200));
+        actions.andExpect(jsonPath("$.msg").value("성공"));
+        actions.andExpect(jsonPath("$.body.id").value(1));
+        actions.andExpect(jsonPath("$.body.username").value("ssar"));
+        actions.andExpect(jsonPath("$.body.email").value("egdg@naver.com"));
+    }
+
+    @Test
+    public void userinfo_test() throws Exception {
+        // given
+        Integer id = 2;
 
         // when
         ResultActions actions = mvc.perform(
@@ -58,15 +121,15 @@ public class UserControllerTest {
         );
 
         // eye
-        String respBody = actions.andReturn().getResponse().getContentAsString();
-        System.out.println("respBody : " + respBody);
+//        String respBody = actions.andReturn().getResponse().getContentAsString();
+//        System.out.println("respBody : " + respBody);
 
         // then
         actions.andExpect(jsonPath("$.status").value(200));
         actions.andExpect(jsonPath("$.msg").value("성공"));
-        actions.andExpect(jsonPath("$.body.id").value(1));
-        actions.andExpect(jsonPath("$.body.username").value("ssar"));
-        actions.andExpect(jsonPath("$.body.email").value("ssar@nate.com"));
+        actions.andExpect(jsonPath("$.body.id").value(2));
+        actions.andExpect(jsonPath("$.body.username").value("cos"));
+        actions.andExpect(jsonPath("$.body.email").value("cos@nate.com"));
     }
 
 
@@ -89,9 +152,9 @@ public class UserControllerTest {
         );
 
         // eye
-        String respBody = actions.andReturn().getResponse().getContentAsString();
-        //int statusCode = actions.andReturn().getResponse().getStatus();
-        System.out.println("respBody : " + respBody);
+//        String respBody = actions.andReturn().getResponse().getContentAsString();
+//        //int statusCode = actions.andReturn().getResponse().getStatus();
+//        System.out.println("respBody : " + respBody);
         //System.out.println("statusCode : "+statusCode);
 
         // then
@@ -121,7 +184,7 @@ public class UserControllerTest {
         );
 
         // eye
-        String respBody = actions.andReturn().getResponse().getContentAsString();
+//        String respBody = actions.andReturn().getResponse().getContentAsString();
         //int statusCode = actions.andReturn().getResponse().getStatus();
         //System.out.println("respBody : "+respBody);
         //System.out.println("statusCode : "+statusCode);
@@ -152,7 +215,7 @@ public class UserControllerTest {
         );
 
         // eye
-        String respBody = actions.andReturn().getResponse().getContentAsString();
+//        String respBody = actions.andReturn().getResponse().getContentAsString();
         //int statusCode = actions.andReturn().getResponse().getStatus();
         //System.out.println("respBody : "+respBody);
         //System.out.println("statusCode : "+statusCode);
@@ -179,10 +242,10 @@ public class UserControllerTest {
                         .content(reqBody)
                         .contentType(MediaType.APPLICATION_JSON)
         );
-        String respBody = actions.andReturn().getResponse().getContentAsString();
-        //System.out.println("respBody : "+respBody);
-        String jwt = actions.andReturn().getResponse().getHeader("Authorization");
-        System.out.println("jwt = " + jwt);
+//        String respBody = actions.andReturn().getResponse().getContentAsString();
+//        //System.out.println("respBody : "+respBody);
+//        String jwt = actions.andReturn().getResponse().getHeader("Authorization");
+//        System.out.println("jwt = " + jwt);
 
         // then
         actions.andExpect(status().isOk()); // header 검증
@@ -217,6 +280,4 @@ public class UserControllerTest {
         actions.andExpect(jsonPath("$.msg").value("인증되지 않았습니다"));
         actions.andExpect(jsonPath("$.body").isEmpty());
     }
-
-
 }
