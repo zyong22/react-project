@@ -34,6 +34,7 @@ public class UserControllerTest {
     @Autowired
     private MockMvc mvc;
 
+
     private static String jwt;
 
     @BeforeAll
