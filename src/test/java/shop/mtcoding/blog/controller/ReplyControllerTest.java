@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import shop.mtcoding.blog._core.utils.JwtUtil;
 import shop.mtcoding.blog.board.BoardRequest;
 import shop.mtcoding.blog.reply.ReplyRequest;
@@ -28,12 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @AutoConfigureMockMvc // MockMvc IoC 로드
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK) // 모든 빈 IoC 로드
-public class ReplyControllerTest {
+public class ReplyControllerTest extends MyRestDoc {
 
     private ObjectMapper om = new ObjectMapper();
-
-    @Autowired
-    private MockMvc mvc;
 
     private static String jwt;
 
@@ -65,26 +63,16 @@ public class ReplyControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
         );
 
-        ResultActions actions2 = mvc.perform(
-                get("/api/boards/" + reqDTO.getBoardId() + "/detail")
-                        .header("Authorization", "Bearer " + jwt)
-        );
-
         // eye
         String respBody = actions.andReturn().getResponse().getContentAsString();
-        System.out.println("작성한 댓글 : " + respBody);
+        //System.out.println("작성한 댓글 : " + respBody);
 
-        String respBody2 = actions2.andReturn().getResponse().getContentAsString();
-        System.out.println("댓글을 작성한 게시글 : " + respBody2);
-
-//        int statusCode = actions.andReturn().getResponse().getStatus();
-//        System.out.println("statusCode : "+statusCode);
 
         // then
         actions.andExpect(jsonPath("$.status").value(200));
         actions.andExpect(jsonPath("$.msg").value("성공"));
-        actions.andExpect(jsonPath("$.body.comment").value("추가댓글"));
-        actions2.andExpect(jsonPath("$.body.replies[0].comment").value("추가댓글"));
+        actions.andExpect(jsonPath("$.body.comment").value("추가댓글"));;
+        actions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     @Test
@@ -107,10 +95,11 @@ public class ReplyControllerTest {
 
         // eye
         String respBody = actions.andReturn().getResponse().getContentAsString();
-        System.out.println("작성한 댓글 : " + respBody);
+        //System.out.println("작성한 댓글 : " + respBody);
 
         // then
         actions.andExpect(jsonPath("$.status").value(404));
         actions.andExpect(jsonPath("$.msg").value("없는 게시글에 댓글을 작성할 수 없어요"));
+        actions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 }
