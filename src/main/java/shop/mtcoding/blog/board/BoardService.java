@@ -8,7 +8,10 @@ import shop.mtcoding.blog._core.errors.exception.Exception403;
 import shop.mtcoding.blog._core.errors.exception.Exception404;
 import shop.mtcoding.blog.reply.Reply;
 import shop.mtcoding.blog.reply.ReplyJPARepository;
+import shop.mtcoding.blog.user.SessionUser;
 import shop.mtcoding.blog.user.User;
+import shop.mtcoding.blog.user.UserJPARepository;
+import shop.mtcoding.blog.user.UserService;
 
 import java.util.List;
 
@@ -17,6 +20,7 @@ import java.util.List;
 public class BoardService {
 
     private final BoardJPARepository boardJPARepository;
+    private final UserJPARepository userJPARepository;
     private final ReplyJPARepository replyJPARepository;
 
     public BoardResponse.DTO 글조회(int boardId){
@@ -44,8 +48,9 @@ public class BoardService {
     } // 더티체킹
 
     @Transactional
-    public BoardResponse.DTO 글쓰기(BoardRequest.SaveDTO reqDTO, User sessionUser){
-        Board board =boardJPARepository.save(reqDTO.toEntity(sessionUser));
+    public BoardResponse.DTO 글쓰기(BoardRequest.SaveDTO reqDTO, SessionUser sessionUser){
+        User user = userJPARepository.findById(sessionUser.getId()).orElseThrow();
+        Board board =boardJPARepository.save(reqDTO.toEntity(user));
         return new BoardResponse.DTO(board);
     }
 
