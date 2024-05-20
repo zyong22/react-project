@@ -80,7 +80,6 @@ public class BoardControllerTest {
         // when
         ResultActions actions = mvc.perform(
                 get("/api/boards/" + id + "/detail")
-                        .header("Authorization", "Bearer " + jwt)
         );
 
         // eye
@@ -94,6 +93,7 @@ public class BoardControllerTest {
         actions.andExpect(jsonPath("$.body.content").value("내용4"));
         actions.andExpect(jsonPath("$.body.replies[0].owner").value(false));
         actions.andExpect(jsonPath("$.body.replies[0].userId").value(2));
+
     }
 
     @Test

@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import shop.mtcoding.blog._core.utils.JwtUtil;
 import shop.mtcoding.blog.user.User;
 import shop.mtcoding.blog.user.UserRequest;
@@ -27,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @AutoConfigureMockMvc // MockMvc IoC 로드
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK) // 모든 빈 IoC 로드
-public class UserControllerTest {
+public class UserControllerTest extends MyRestDoc {
 
     private ObjectMapper om = new ObjectMapper();
 
@@ -75,6 +76,7 @@ public class UserControllerTest {
         // then
         actions.andExpect(jsonPath("$.status").value(400));
         actions.andExpect(jsonPath("$.msg").value("이메일 형식으로 작성해주세요 : email"));
+        actions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     @Test
