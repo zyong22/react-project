@@ -18,7 +18,7 @@ function App() {
           <Route path="/saveForm" element={<SaveForm />} />
           <Route path="/post/:id" element={<Detail />} />
           <Route path="/loginForm" element={<LoginForm />} />
-          <Route path="/joinForm" elment={<JoinForm />} />
+          <Route path="/joinForm" element={<JoinForm />} />
           <Route path="/updateForm/:id" element={<UpdateForm />} />
         </Routes>
       </Container>
